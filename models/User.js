@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
@@ -8,40 +8,82 @@ const UserSchema = new Schema({
         required: true,
         minLength: 3,
         maxLength: 16,
+        unique: true,
     },
     password: {
         type: String,
         required: true,
         minLength: 6,
     },
-    Full_name: {
+    name: {
         type: String,
+        minLength: 2,
+        maxLength: 50,
+        required: true,
     },
-    email_address: {
-
+    emailAddress: {
+        type: String,
+        minLength: 5,
+        maxLength: 100,
+        required: true,
+        unique: true,
     },
-    friends: {
-
+    friends: [
+        // {
+        //     timestamp: {
+        //         type: Date,
+        //         default: Date.now,
+        //     }
+        // },
+        {
+            user: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User',
+                required: true,
+            },
+        },
+    ],
+    friendRequests: [
+        // {
+        //     timestamp: {
+        //         type: Date,
+        //         default: Date.now,
+        //     }
+        // },
+        {
+            user: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User',
+                required: true,
+            },
+        },
+    ],
+    userSince: {
+        type: Date,
+        default: Date.now,
     },
-    friend_requests: {
-
-    },
-    user_since: {
-
-    },
-    profile_picture: {
-
+    profilePicture: {
+        type: String,
+        required: true,
     },
     bio: {
-
+        type: String,
+        minLength: 3,
+        maxLength: 1000,
+        required: false,
     },
-    is_email_verified: {
-
+    isEmailVerified: {
+        type: Boolean,
+        default: false,
     },
-    is_admin: {
-        
-    }
-
+    isAdmin: {
+        type: Boolean,
+        default: false,
+    },
+    facebookId: {
+        type: String,
+        required: false,
+    },
 });
 
 // Export model
