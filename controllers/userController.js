@@ -10,17 +10,22 @@ exports.user_detail = (req, res) => {
     res.send(`NOT IMPLEMENTED: User detail: ${req.params.id}`);
 };
 
-// Handle User create on POST.
-exports.user_create_post = (req, res) => {
-    res.send('NOT IMPLEMENTED: User create POST');
+// Handle User register.
+exports.user_register = (req, res) => {
+    res.send('NOT IMPLEMENTED: User create');
 };
 
-// Handle User delete on POST.
-exports.user_delete_post = (req, res) => {
-    res.send('NOT IMPLEMENTED: User delete POST');
+// Handle User Login.
+exports.user_login = (reg, res) => {
+    res.send('NOT IMPLEMENTED: User Login')
+}
+
+// Handle User delete.
+exports.user_delete = (req, res) => {
+    res.send('NOT IMPLEMENTED: User delete');
 };
 
-// Handle User update on POST.
-exports.user_update_post = (req, res) => {
+// Handle User update.
+exports.user_update = (req, res) => {
     res.send('NOT IMPLEMENTED: User update POST');
 };
