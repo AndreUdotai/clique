@@ -11,16 +11,16 @@ exports.post_detail = (req, res) => {
 };
 
 // Handle Post create on POST.
-exports.post_create_post = (req, res) => {
+exports.post_create = (req, res) => {
     res.send('NOT IMPLEMENTED: Post create POST');
 };
 
 // Handle Post delete on POST.
-exports.post_delete_post = (req, res) => {
+exports.post_delete = (req, res) => {
     res.send('NOT IMPLEMENTED: Post delete POST');
 };
 
 // Handle Post update on POST.
-exports.post_update_post = (req, res) => {
+exports.post_update = (req, res) => {
     res.send('NOT IMPLEMENTED: Post update POST');
 };

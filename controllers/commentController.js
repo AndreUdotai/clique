@@ -11,16 +11,16 @@ exports.comment_detail = (req, res) => {
 };
 
 // Handle Comment create on POST.
-exports.comment_create_post = (req, res) => {
+exports.comment_create = (req, res) => {
     res.send('NOT IMPLEMENTED: Comment create POST');
 };
 
 // Handle Comment delete on POST.
-exports.comment_delete_post = (req, res) => {
+exports.comment_delete = (req, res) => {
     res.send('NOT IMPLEMENTED: Comment delete POST');
 };
 
 // Handle Comment update on POST.
-exports.comment_update_post = (req, res) => {
+exports.comment_update = (req, res) => {
     res.send('NOT IMPLEMENTED: Comment update POST');
 };
