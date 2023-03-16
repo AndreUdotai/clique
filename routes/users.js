@@ -5,16 +5,16 @@ var router = express.Router();
 const user_controller = require('../controllers/userController');
 
 // POST request for creating User.
-router.post("/user/create", user_controller.user_register);
+router.post("/users", user_controller.user_register);
 
-// POST request to delete User.
-router.post("/user/:userid/delete", user_controller.user_delete);
+// DELETE request to delete User.
+router.delete("/users/:userid", user_controller.user_delete);
 
-// POST request to update User.
-router.post("/user/:userid/update", user_controller.user_update);
+// UPDATE request to update User.
+router.put("/users/:userid", user_controller.user_update);
 
 // GET request for one User.
-router.get("/user/:userid", user_controller.user_detail);
+router.get("/users/:userid", user_controller.user_detail);
 
 // GET request for list of all User items.
 router.get("/users", user_controller.user_list);
