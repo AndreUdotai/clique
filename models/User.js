@@ -21,7 +21,7 @@ const UserSchema = new Schema({
         maxLength: 50,
         required: true,
     },
-    emailAddress: {
+    email: {
         type: String,
         minLength: 5,
         maxLength: 100,
@@ -64,7 +64,7 @@ const UserSchema = new Schema({
     },
     profilePicture: {
         type: String,
-        required: true,
+        // required: true,
     },
     bio: {
         type: String,
