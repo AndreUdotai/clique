@@ -5,12 +5,13 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 
 import passport from 'passport';
-import { loginCheck } from './auth/passport';
-loginCheck(passport)
+require('./passport');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+let indexRouter = require('./routes/index');
+let usersRouter = require('./routes/users');
 let postsRouter = require('./routes/posts');
+let authRouter  = require('./routes/auth');
+
 // let commentsRouter = require('./routes/comments');
 
 const app = express();
@@ -39,8 +40,10 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/api', usersRouter);
 app.use('/api', postsRouter);
+app.use('/api', authRouter);
+app.use('/api', passport.authenticate('jwt', {session: false}), usersRouter);
+
 // app.use('/api', commentsRouter);
 
 // catch 404 and forward to error handler
