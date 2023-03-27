@@ -1,6 +1,9 @@
 import User from '../models/User';
 import bcrypt from 'bcryptjs';
 import { body, validationResult } from 'express-validator';
+import passport from 'passport';
+// import async from 'async';
+import jwt from 'jsonwebtoken';
 
 // Display list of all Users.
 exports.user_list = async (req, res) => {
@@ -118,7 +121,32 @@ exports.user_register = [
 
 // Handle User Login.
 exports.user_login = (reg, res) => {
-    res.send('NOT IMPLEMENTED: User Login');
+    const { username, password } = req.body;
+    if (!username || !password) {
+        res.status(400).json(req.body);
+    } else {
+        passport.authenticate(
+            'local',
+            { session: false },
+            (err, user, info) => {
+                if (err || !user) {
+                    return res.status(400).json({
+                        message: 'Login Unsuccessful!',
+                        user: user,
+                    });
+                }
+                // Note, that {session: false} is passed in passport options so that it won't save the user in the session.
+                req.login(user, { session: false }, (err) => {
+                    if (err) {
+                        res.send(err);
+                    }
+                    // generate a signed son web token with the contents of user object and return it in the response
+                    const token = jwt.sign({ user }, 'secretKey');
+                    return res.json({ user, token });
+                });
+            },
+        )(req, res);
+    }
 };
 
 // Handle User delete.

@@ -1,16 +1,19 @@
-// var createError = require('http-errors');
 import createError from 'http-errors';
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+import express from 'express';
+import path from 'path';
+import cookieParser from 'cookie-parser';
+import logger from 'morgan';
+
+import passport from 'passport';
+import { loginCheck } from './auth/passport';
+loginCheck(passport)
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 let postsRouter = require('./routes/posts');
 // let commentsRouter = require('./routes/comments');
 
-var app = express();
+const app = express();
 
 const mongoose = require('mongoose');
 require('dotenv').config();
