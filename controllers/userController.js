@@ -3,8 +3,16 @@ import bcrypt from 'bcryptjs';
 import { body, validationResult } from 'express-validator';
 
 // Display list of all Users.
-exports.user_list = (req, res) => {
-    res.send('NOT IMPLEMENTED: User list');
+exports.user_list = async (req, res) => {
+    try {
+        let users = await User.find().exec();
+        res.status(200).json({
+            users: users
+        });
+    } catch (err) {
+        return next(err);
+    }
+
 };
 
 // Display detail page for a specific User.
@@ -61,7 +69,9 @@ exports.user_register = [
             // Data from form is valid.
             // Check if a User with the same username already exists.
             try {
-                let found_username = await User.findOne({ username: user.username}).exec();
+                let found_username = await User.findOne({
+                    username: user.username,
+                }).exec();
 
                 if (found_username) {
                     // User with same username already exist, Render form again with sanitized values/errors messages.
