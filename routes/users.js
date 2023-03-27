@@ -19,7 +19,4 @@ router.get("/users/:userid", user_controller.user_detail);
 // GET request for list of all User items.
 router.get("/users", user_controller.user_list);
 
-// POST request for user login
-router.get("/users/login", user_controller.user_login);
-
 module.exports = router;
