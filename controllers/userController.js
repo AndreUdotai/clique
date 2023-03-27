@@ -61,7 +61,7 @@ exports.user_register = [
             // Data from form is valid.
             // Check if a User with the same username already exists.
             try {
-                let found_username = await User.findOne({ username: user.username }).exec();
+                let found_username = await User.findOne({ username: user.username}).exec();
 
                 if (found_username) {
                     // User with same username already exist, Render form again with sanitized values/errors messages.
@@ -70,25 +70,36 @@ exports.user_register = [
                         usernameError: 'Username already exists!',
                     });
                     return;
-                }; 
+                }
 
-                bcrypt.hash(user.password, 10, (err, hashedPassword) => {
+                bcrypt.hash(user.password, 10, async (err, hashedPassword) => {
                     if (err) {
                         return next(err);
                     }
                     user.password = hashedPassword;
-                    user.save()
-                        .then(() => {
-                            res.status(200).json({
-                                message: 'User created successfully',
-                                user: user,
-                            })
-                        })
-                        .catch((err) => {
-                            return next(err);
-                        })
+
+                    try {
+                        await user.save();
+                        res.status(200).json({
+                            message: 'User created successfully',
+                            user: user,
+                        });
+                    } catch (err) {
+                        return next(err);
+                    }
+
+                    // user.save()
+                    //     .then(() => {
+                    //         res.status(200).json({
+                    //             message: 'User created successfully',
+                    //             user: user,
+                    //         })
+                    //     })
+                    //     .catch((err) => {
+                    //         return next(err);
+                    //     })
                 });
-            } catch(err) {
+            } catch (err) {
                 return next(err);
             }
         }
@@ -109,20 +120,3 @@ exports.user_delete = (req, res) => {
 exports.user_update = (req, res) => {
     res.send('NOT IMPLEMENTED: User update POST');
 };
-
-// passport.use(
-//     new LocalStrategy(async(username, password, done) => {
-//       try {
-//         const user = await User.findOne({ username: username });
-//         if (!user) {
-//           return done(null, false, { message: "Incorrect username" });
-//         };
-//         if (user.password !== password) {
-//           return done(null, false, { message: "Incorrect password" });
-//         };
-//         return done(null, user);
-//       } catch(err) {
-//         return done(err);
-//       };
-//     });
-//   );
