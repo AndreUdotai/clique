@@ -7,10 +7,13 @@ const user_controller = require('../controllers/userController');
 // POST request for creating User.
 router.post("/users", user_controller.user_register);
 
+// PUT request for sending a friend request
+router.put("/users/friend-request/:userid", user_controller.frient_request);
+
 // DELETE request to delete User.
 router.delete("/users/:userid", user_controller.user_delete);
 
-// UPDATE request to update User.
+// PUT request to update User.
 router.put("/users/:userid", user_controller.user_update);
 
 // GET request for one User.

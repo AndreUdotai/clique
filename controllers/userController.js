@@ -18,7 +18,7 @@ exports.user_list = async (req, res) => {
 
 // Display detail page for a specific User.
 exports.user_detail = (req, res) => {
-    res.send(`NOT IMPLEMENTED: User detail: ${req.params.id}`);
+    res.send(`NOT IMPLEMENTED: User detail: ${req.params.userid}`);
 };
 
 // Handle User register.
@@ -126,3 +126,16 @@ exports.user_delete = (req, res) => {
 exports.user_update = (req, res) => {
     res.send('NOT IMPLEMENTED: User update POST');
 };
+
+// Handle User friend request.
+exports.frient_request = async (req, res) => {
+    try {
+        let requestedUser = await User.findByIdAndUpdate(req.params.userid, { "$push": { "friendRequests": req.user._id }}, { "new": true } ).exec();
+        res.status(200).json({
+            message: 'Friend request successfully sent!',
+            user: requestedUser,
+        });
+    } catch(err){
+        return next(err)
+    }
+}
