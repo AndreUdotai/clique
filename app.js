@@ -23,7 +23,7 @@ require('dotenv').config();
 // const mongoose = require("mongoose");
 mongoose.set('strictQuery', false);
 const mongoDB = process.env.MY_MONGODB_URI
-mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(mongoDB);
 // Get the default connection
 const db = mongoose.connection;
 // Bind connection to error event (to get notification of connection errors)
@@ -40,8 +40,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/api', postsRouter);
 app.use('/api', authRouter);
+app.use('/api', passport.authenticate('jwt', {session: false}), postsRouter);
 app.use('/api', passport.authenticate('jwt', {session: false}), usersRouter);
 
 // app.use('/api', commentsRouter);
