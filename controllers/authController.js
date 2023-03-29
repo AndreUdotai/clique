@@ -1,21 +1,21 @@
-const jwt = require('jsonwebtoken');
-const passport = require("passport");
-const User = require('../models/User');
+import jwt from 'jsonwebtoken';
+import passport from 'passport';
+import User from '../models/User';
 
 // Handle User Login authentication
 exports.auth_login = async (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) {
         res.status(400).json({
-            message: "Provide username and password",
-            user: req.body
+            message: 'Provide username and password',
+            user: req.body,
         });
     } else {
         let user = await User.findOne({ username: req.body.username });
         if (!user) {
             return res.status(400).json({
-                message: "Incorrect username",
-                user: req.body
+                message: 'Incorrect username',
+                user: req.body,
             });
         }
         passport.authenticate(
@@ -35,7 +35,9 @@ exports.auth_login = async (req, res) => {
                         res.send(err);
                     }
                     // generate a signed son web token with the contents of user object and return it in the response
-                    const token = jwt.sign({ user }, 'secretKey');
+                    const token = jwt.sign({ user }, 'secretKey', {
+                        expiresIn: '1d',
+                    });
                     return res.json({ user, token });
                 });
             },
