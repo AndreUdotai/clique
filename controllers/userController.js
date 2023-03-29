@@ -98,17 +98,6 @@ exports.user_register = [
                     } catch (err) {
                         return next(err);
                     }
-
-                    // user.save()
-                    //     .then(() => {
-                    //         res.status(200).json({
-                    //             message: 'User created successfully',
-                    //             user: user,
-                    //         })
-                    //     })
-                    //     .catch((err) => {
-                    //         return next(err);
-                    //     })
                 });
             } catch (err) {
                 return next(err);
@@ -128,14 +117,30 @@ exports.user_update = (req, res) => {
 };
 
 // Handle User friend request.
-exports.frient_request = async (req, res) => {
+exports.friend_request = async (req, res) => {
     try {
-        let requestedUser = await User.findByIdAndUpdate(req.params.userid, { "$push": { "friendRequests": req.user._id }}, { "new": true } ).exec();
+        let user = await User.findByIdAndUpdate(req.params.userid, { "$push": { "friendRequests": req.user._id }}, { "new": true } ).exec();
         res.status(200).json({
             message: 'Friend request successfully sent!',
-            user: requestedUser,
+            user: user,
         });
     } catch(err){
         return next(err)
     }
 }
+
+// exports.accept_request = async (req, res) => {
+//     try {
+//         // Confirm if the user sent a request
+//         let user = await User.findById(req.user._id).exec();
+//         res.status(200).json({
+//             message: `Request successful`,
+//             user: user
+//         })
+//     } catch(err){
+//         return next(err)
+//     }
+//     // res.send(`NOT IMPLEMENTED: I am accepting a friend request from ${req.params.userid}`);
+//     // Remove the user from the friend request array
+//     // Add the user to the friends array
+// }

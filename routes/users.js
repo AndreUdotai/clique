@@ -8,7 +8,10 @@ const user_controller = require('../controllers/userController');
 router.post("/users", user_controller.user_register);
 
 // PUT request for sending a friend request
-router.put("/users/friend-request/:userid", user_controller.frient_request);
+router.put("/users/friend-request/:userid", user_controller.friend_request);
+
+// // PUT request for accepting a friend request
+// router.put("/users/accept-request/:userid", user_controller.accept_request);
 
 // DELETE request to delete User.
 router.delete("/users/:userid", user_controller.user_delete);

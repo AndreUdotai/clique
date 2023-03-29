@@ -8,7 +8,6 @@ const ExtractJWT = passportJWT.ExtractJwt;
 
 import User from './models/User';
 
-// const loginCheck = (passport) => {
 passport.use(
     new LocalStrategy(async (username, password, done) => {
         try {
@@ -38,9 +37,6 @@ passport.use(
         }
     }),
 );
-// };
-
-// module.exports = { loginCheck };
 
 passport.use(
     new JWTStrategy(
