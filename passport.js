@@ -32,7 +32,6 @@ passport.use(
                 }
             });
         } catch (err) {
-            console.log(done(err));
             return done(err);
         }
     }),
