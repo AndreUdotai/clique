@@ -8,7 +8,8 @@ exports.user_list = async (req, res) => {
     try {
         let users = await User.find().exec();
         res.status(200).json({
-            users: users
+            data: users,
+            user: req.user
         });
     } catch (err) {
         return next(err);
