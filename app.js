@@ -8,7 +8,7 @@ import passport from 'passport';
 require('./passport');
 
 let indexRouter = require('./routes/index');
-let usersRouter = require('./routes/users');
+let usersRouter = require('./routes/users').default;
 let postsRouter = require('./routes/posts');
 let authRouter  = require('./routes/auth').default;
 

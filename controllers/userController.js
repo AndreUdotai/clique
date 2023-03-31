@@ -14,7 +14,6 @@ exports.user_list = async (req, res) => {
     } catch (err) {
         return next(err);
     }
-
 };
 
 // Display detail page for a specific User.

@@ -8,6 +8,7 @@ const ExtractJWT = passportJWT.ExtractJwt;
 
 import User from './models/User';
 
+// Login logic
 passport.use(
     new LocalStrategy(async (username, password, done) => {
         try {
@@ -37,6 +38,7 @@ passport.use(
     }),
 );
 
+// Protected requests
 passport.use(
     new JWTStrategy(
         {
@@ -44,6 +46,7 @@ passport.use(
             secretOrKey: 'secretKey',
         },
         async function (jwtPayload, cb) {
+            // return cb(null, jwt_payload)
             //find the user in db if needed. This functionality may be omitted if you store everything you'll need in JWT payload.
             try {
                 const user = await User.findById(jwtPayload.user._id);
