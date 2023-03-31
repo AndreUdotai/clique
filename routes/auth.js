@@ -1,10 +1,15 @@
-var express = require('express');
-var router = express.Router();
+import { Router } from 'express';
+var router = Router();
+
+import passport from 'passport'
 
 // Require Auth controller module
-const auth_controller = require('../controllers/authController');
+import { auth_login, auth_logout } from '../controllers/authController';
 
 // POST request for user login
-router.post("/login", auth_controller.auth_login);
+router.post("/login", auth_login);
 
-module.exports = router;
+// POST request for user logout
+router.post("/logout", passport.authenticate('jwt', {session: false}), auth_logout);
+
+export default router;
