@@ -84,6 +84,9 @@ const UserSchema = new Schema({
         type: String,
         required: false,
     },
+    tokens: [{
+        type: Object,
+    }]
 });
 
 // Export model
