@@ -7,6 +7,8 @@ import logger from 'morgan';
 import passport from 'passport';
 require('./passport');
 
+import { confirmToken } from "./confirmToken";
+
 let indexRouter = require('./routes/index');
 let usersRouter = require('./routes/users').default;
 let postsRouter = require('./routes/posts');
@@ -41,8 +43,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/api', authRouter);
-app.use('/api', passport.authenticate('jwt', {session: false}), postsRouter);
-app.use('/api', passport.authenticate('jwt', {session: false}), usersRouter);
+app.use('/api', passport.authenticate('jwt', {session: false}), confirmToken, postsRouter);
+app.use('/api', passport.authenticate('jwt', {session: false}), confirmToken, usersRouter);
 
 // app.use('/api', commentsRouter);
 
