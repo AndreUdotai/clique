@@ -129,10 +129,43 @@ exports.friend_request = async (req, res) => {
     }
 }
 
+exports.reject_request = async (req, res) => {
+    try {
+        // Grab the requesting id from the parameters
+        let reqId = req.params.userid;
+        // Check if the request id exists in the friend request array
+        let user = await User.findById(req.user._id).exec();
+        let friendRequestsArray = user.friendRequests;
+        // Loop over the friendRequests Array
+        for(let request of friendRequestsArray){
+            if (String(request._id) === reqId){
+                // There is a valid friend request
+                // Find the index of request
+                let requestIndex = friendRequestsArray.indexOf(request);
+                // Remove the request from the friendRequestArray
+                friendRequestsArray.splice(requestIndex, 1);
+
+                await User.findByIdAndUpdate(user._id, {friendRequests: friendRequestsArray});
+
+                return res.status(200).json({message: "Successfully declined friend request",user})
+            } else {
+                // There is no valid friend request
+                return res.json({message: "User did not send friend request!"})
+            }
+        }
+    } catch(err) {
+        return next(err);
+    } 
+}
+
 // exports.accept_request = async (req, res) => {
 //     try {
-//         // Confirm if the user sent a request
+//         // Check if there was a friend request from the requesting user
 //         let user = await User.findById(req.user._id).exec();
+//         let requestingUserId = req.params.userid;
+//         console.log(user.friendRequests);
+//         console.log(requestingUserId);
+
 //         res.status(200).json({
 //             message: `Request successful`,
 //             user: user
@@ -140,7 +173,4 @@ exports.friend_request = async (req, res) => {
 //     } catch(err){
 //         return next(err)
 //     }
-//     // res.send(`NOT IMPLEMENTED: I am accepting a friend request from ${req.params.userid}`);
-//     // Remove the user from the friend request array
-//     // Add the user to the friends array
 // }
