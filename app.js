@@ -10,7 +10,7 @@ require('./passport');
 let indexRouter = require('./routes/index');
 let usersRouter = require('./routes/users');
 let postsRouter = require('./routes/posts');
-let authRouter  = require('./routes/auth');
+let authRouter  = require('./routes/auth').default;
 
 // let commentsRouter = require('./routes/comments');
 
