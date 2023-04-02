@@ -1,7 +1,7 @@
 import User from '../models/User';
 import bcrypt from 'bcryptjs';
 import { body, validationResult } from 'express-validator';
-// import async from 'async';
+import async from 'async';
 
 // Display list of all Users.
 exports.user_list = async (req, res) => {
@@ -9,7 +9,7 @@ exports.user_list = async (req, res) => {
         let users = await User.find().exec();
         res.status(200).json({
             data: users,
-            user: req.user
+            user: req.user,
         });
     } catch (err) {
         return next(err);
@@ -17,8 +17,27 @@ exports.user_list = async (req, res) => {
 };
 
 // Display detail page for a specific User.
-exports.user_detail = (req, res) => {
-    res.send(`NOT IMPLEMENTED: User detail: ${req.params.userid}`);
+exports.user_detail = async (req, res, next) => {
+    try {
+        let user = await User.findById(req.params.userid).populate(
+            'friendRequests',
+        );
+
+        if (user == null) {
+            // No results.
+            const err = new Error('User not found!');
+            err.status = 404;
+            return next(err);
+        }
+
+        // Successful
+        res.status(200).json({
+            message: 'User details',
+            user,
+        });
+    } catch (err) {
+        return next(err);
+    }
 };
 
 // Handle User register.
@@ -117,18 +136,43 @@ exports.user_update = (req, res) => {
 };
 
 // Handle User friend request.
-exports.friend_request = async (req, res) => {
+exports.friend_request = async (req, res, next) => {
     try {
-        let user = await User.findByIdAndUpdate(req.params.userid, { "$push": { "friendRequests": req.user._id }}, { "new": true } ).exec();
-        res.status(200).json({
-            message: 'Friend request successfully sent!',
-            user: user,
-        });
-    } catch(err){
-        return next(err)
+        // Check if a user is trying to send a friend request to itself
+        if (req.user._id == req.params.userid) {
+            return res.json({
+                message: 'You cannot send a friend request to yourself!',
+            });
+        }
+        // Check if they are already friends
+        let requestedUser = await User.findById(req.params.userid);
+        if(requestedUser.friends.includes(req.user._id)){
+            return res.json({
+                message: "You are already friends with this user!",
+            })
+        }
+        // Check if the friend request was already sent
+        if (requestedUser.friendRequests.includes(req.user._id)) {
+            return res.json({
+                message: 'A friend request was already sent to this user!',
+            });
+        } else {
+            let user = await User.findByIdAndUpdate(
+                req.params.userid,
+                { $push: { friendRequests: req.user._id } },
+                { new: true },
+            ).exec();
+            res.status(200).json({
+                message: 'Friend request successfully sent!',
+                user: user,
+            });
+        }
+    } catch (err) {
+        return next(err);
     }
-}
+};
 
+// Handle User friend request rejection.
 exports.reject_request = async (req, res) => {
     try {
         // Grab the requesting id from the parameters
@@ -137,40 +181,81 @@ exports.reject_request = async (req, res) => {
         let user = await User.findById(req.user._id).exec();
         let friendRequestsArray = user.friendRequests;
         // Loop over the friendRequests Array
-        for(let request of friendRequestsArray){
-            if (String(request._id) === reqId){
+        for (let request of friendRequestsArray) {
+            if (String(request._id) === reqId) {
                 // There is a valid friend request
                 // Find the index of request
                 let requestIndex = friendRequestsArray.indexOf(request);
                 // Remove the request from the friendRequestArray
                 friendRequestsArray.splice(requestIndex, 1);
 
-                await User.findByIdAndUpdate(user._id, {friendRequests: friendRequestsArray});
+                await User.findByIdAndUpdate(user._id, {
+                    friendRequests: friendRequestsArray,
+                });
 
-                return res.status(200).json({message: "Successfully declined friend request",user})
+                return res.status(200).json({
+                    message: 'Successfully declined friend request',
+                    user,
+                });
             } else {
                 // There is no valid friend request
-                return res.json({message: "User did not send friend request!"})
+                return res.json({
+                    message: 'User did not send friend request!',
+                });
             }
         }
-    } catch(err) {
+    } catch (err) {
         return next(err);
-    } 
-}
+    }
+};
 
-// exports.accept_request = async (req, res) => {
-//     try {
-//         // Check if there was a friend request from the requesting user
-//         let user = await User.findById(req.user._id).exec();
-//         let requestingUserId = req.params.userid;
-//         console.log(user.friendRequests);
-//         console.log(requestingUserId);
+exports.accept_request = async (req, res, next) => {
+    // Check if they are already friends
+    try {
+        // Grab the requesting user's id from the parameters
+        let requestingId = req.params.userid;
+        // Grab the requested user's id from the req payload
+        let requestedId = req.user._id;
+        // Check if the friend request was made
+        let requestedUser = await User.findById(requestedId).exec();
+        let friendRequestsArray = requestedUser.friendRequests;
+        // Loop over the friendRequests Array
+        for (let request of friendRequestsArray) {
+            if (String(request._id) === requestingId) {
+                // There was a valid friend request
+                // Find the index of request
+                let requestIdIndex = friendRequestsArray.indexOf(request);
+                // Remove the request from the friendRequestArray
+                // Add the requesting id in the requested friends array
+                friendRequestsArray.splice(requestIdIndex, 1);
+                let user = await User.findByIdAndUpdate(requestedUser._id, {
+                    $set: { friendRequests: friendRequestsArray },
+                    $push: { friends: requestingId },
+                });
+                // Add the the requested user's id in the requesting user's friends array
+                await User.findByIdAndUpdate(
+                    requestingId,
+                    {
+                        $push: { friends: requestedId },
+                    },
+                    { new: true },
+                );
 
-//         res.status(200).json({
-//             message: `Request successful`,
-//             user: user
-//         })
-//     } catch(err){
-//         return next(err)
-//     }
-// }
+                return res.status(200).json(
+                    {
+                        message: 'Successfully accepted friend request',
+                        user,
+                    },
+                    { new: true },
+                );
+            } else {
+                // There is no valid friend request
+                return res.json({
+                    message: 'User did not send friend request!',
+                });
+            }
+        }
+    } catch (err) {
+        return next(err);
+    }
+};

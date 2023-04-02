@@ -36,11 +36,8 @@ const UserSchema = new Schema({
         //     }
         // },
         {
-            user: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'User',
-                required: true,
-            },
         },
     ],
     friendRequests: [
@@ -51,11 +48,8 @@ const UserSchema = new Schema({
         //     }
         // },
         {
-            user: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'User',
-                required: true,
-            },
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
         },
     ],
     userSince: {
@@ -84,9 +78,11 @@ const UserSchema = new Schema({
         type: String,
         required: false,
     },
-    tokens: [{
-        type: Object,
-    }]
+    tokens: [
+        {
+            type: Object,
+        },
+    ],
 });
 
 // Export model
