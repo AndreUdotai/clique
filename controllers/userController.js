@@ -130,10 +130,46 @@ exports.user_delete = (req, res) => {
     res.send('NOT IMPLEMENTED: User delete');
 };
 
-// Handle User update.
-exports.user_update = (req, res) => {
-    res.send('NOT IMPLEMENTED: User update POST');
-};
+// // Handle User update.
+// exports.user_update = [
+//     // username, password, name, bio, 
+//     // res.send('NOT IMPLEMENTED: User update POST');
+
+//     // Validate and sanitize fields.
+//     body("name", "Name must not be empty!")
+//         .trim()
+//         .isLength({ min: 1 })
+//         .escape(),
+//     body("bio")
+//         .trim(),
+//     body("username", "Username must no be empty!")
+//         .trim()
+//         .isLength({ min: 1 }),
+//     body("password", "Password must be at least 6 characters")
+//         .trim()
+//         .isLength({ min: 6 }),
+
+//     // Process request after validation and sanitization.
+//     (req, res, next) => {
+//         // Extract the validation errors from a request
+//         const errors = validationResult(req);
+
+//         // Create a User object with trimmed and old id.
+//         const user = new User({
+//             name: req.body.name,
+//             bio: req.body.bio,
+//             username: req.body.username,
+//             password: req.body.password,
+//             _id: req.params.id,
+//         });
+
+//         if (!errors.isEmpty()) {
+//             // There are errors.
+//             res.status(400).json({})
+//         }
+//     }
+
+// ]
 
 // Handle User friend request.
 exports.friend_request = async (req, res, next) => {
@@ -210,7 +246,6 @@ exports.reject_request = async (req, res) => {
 };
 
 exports.accept_request = async (req, res, next) => {
-    // Check if they are already friends
     try {
         // Grab the requesting user's id from the parameters
         let requestingId = req.params.userid;
