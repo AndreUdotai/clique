@@ -130,46 +130,66 @@ exports.user_delete = (req, res) => {
     res.send('NOT IMPLEMENTED: User delete');
 };
 
-// // Handle User update.
-// exports.user_update = [
-//     // username, password, name, bio, 
-//     // res.send('NOT IMPLEMENTED: User update POST');
+// Handle User update.
+exports.user_update = [
+    // Validate and sanitize fields.
+    body('name', 'Name must not be empty!')
+        .trim()
+        .isLength({ min: 1 }),
+    body('bio').trim(),
+    body('username', 'Username must not be empty!').trim().isLength({ min: 1 }),
 
-//     // Validate and sanitize fields.
-//     body("name", "Name must not be empty!")
-//         .trim()
-//         .isLength({ min: 1 })
-//         .escape(),
-//     body("bio")
-//         .trim(),
-//     body("username", "Username must no be empty!")
-//         .trim()
-//         .isLength({ min: 1 }),
-//     body("password", "Password must be at least 6 characters")
-//         .trim()
-//         .isLength({ min: 6 }),
+    // Process request after validation and sanitization.
+    async (req, res, next) => {
+        try{
+            // Confirm is trying to update its own record
+            if (JSON.stringify(req.params.userid) !== JSON.stringify(req.user._id)){
+                return res.status(400).json({ message: 'You can only update your profile!' });
+            }
 
-//     // Process request after validation and sanitization.
-//     (req, res, next) => {
-//         // Extract the validation errors from a request
-//         const errors = validationResult(req);
+            // Extract the validation errors from a request
+            const errors = validationResult(req);
 
-//         // Create a User object with trimmed and old id.
-//         const user = new User({
-//             name: req.body.name,
-//             bio: req.body.bio,
-//             username: req.body.username,
-//             password: req.body.password,
-//             _id: req.params.id,
-//         });
+            // Create a User object with trimmed and old id.
+            const user = new User({
+                name:       req.body.name,
+                bio:        req.body.bio,
+                username:   req.body.username,
+                _id:        req.params.userid,
+            });
 
-//         if (!errors.isEmpty()) {
-//             // There are errors.
-//             res.status(400).json({})
-//         }
-//     }
+            if (!errors.isEmpty()) {
+                // There are errors.
+                res.status(400).json({
+                    user: user,
+                    errors: errors,
+                });
+                return;
+            } else {
+                let updatedUser = await User.findByIdAndUpdate(
+                    user._id,
+                    {
+                        $set: {
+                            name: user.name,
+                            bio: user.bio,
+                            username: user.username,
+                        },
+                    },
+                    {
+                        new: true,
+                    },
+                ).exec();
 
-// ]
+                res.status(200).json({
+                    message: 'Successfully updated user!',
+                    updatedUser,
+                });
+            }
+        } catch(err){
+            return next(err)
+        }
+    }
+]
 
 // Handle User friend request.
 exports.friend_request = async (req, res, next) => {
@@ -182,10 +202,10 @@ exports.friend_request = async (req, res, next) => {
         }
         // Check if they are already friends
         let requestedUser = await User.findById(req.params.userid);
-        if(requestedUser.friends.includes(req.user._id)){
+        if (requestedUser.friends.includes(req.user._id)) {
             return res.json({
-                message: "You are already friends with this user!",
-            })
+                message: 'You are already friends with this user!',
+            });
         }
         // Check if the friend request was already sent
         if (requestedUser.friendRequests.includes(req.user._id)) {
