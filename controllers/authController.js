@@ -50,9 +50,9 @@ exports.auth_login = async (req, res) => {
                         })
                     }
 
-                    await User.findByIdAndUpdate( user._id, {tokens: [...oldTokens, {token, signedAt: Date.now().toString()}]}, { new: true });
+                    let loggedUser = await User.findByIdAndUpdate( user._id, {tokens: [...oldTokens, {token, signedAt: Date.now().toString()}]}, { new: true });
 
-                    return res.json({ user, token });
+                    return res.json({ loggedUser, token });
                 });
             },
         )(req, res);
