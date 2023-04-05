@@ -2,7 +2,7 @@ import { Router } from 'express';
 var router = Router();
 
 // Require Post controller module
-import { post_create, post_delete, post_update, post_detail, post_list } from '../controllers/postController';
+import { post_create, post_delete, post_update, post_detail, post_list, post_like } from '../controllers/postController';
 // Require Comment controller module
 import { comment_create, comment_delete, comment_update, comment_detail, comment_list } from '../controllers/commentController';
 
@@ -12,8 +12,11 @@ router.post("/posts", post_create);
 // DELETE request to delete Post.
 router.delete("/posts/:postid", post_delete);
 
-// UPDATE request to update Post.
+// PUT request to update Post.
 router.put("/posts/:postid", post_update);
+
+// PUT request to like a Post.
+router.put("/posts/:postid/like", post_like);
 
 // GET request for one Post.
 router.get("/posts/:postid", post_detail);

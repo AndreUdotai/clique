@@ -21,8 +21,28 @@ export async function post_list(req, res, next) {
 }
 
 // Display detail page for a specific Post.
-export function post_detail(req, res) {
-    res.send(`NOT IMPLEMENTED: Post detail: ${req.params.id}`);
+export async function post_detail(req, res, next) {
+    try {
+        let post = await Post.findById(req.params.postid).populate('user').exec();
+
+        let numOfLikes = post.likes.length;
+
+        if(post == null) {
+            // No results.
+            const err = new Error("Post not found!");
+            err.status = 404;
+            return next(err);
+        }
+
+        // Successful, so render.
+        res.status(200).json({
+            message: "View post.",
+            post,
+            numOfLikes,
+        })
+    } catch (err) {
+        return next(err);
+    }
 }
 
 export const post_create = [
@@ -70,4 +90,31 @@ export function post_delete(req, res) {
 // Handle Post update on POST.
 export function post_update(req, res) {
     res.send('NOT IMPLEMENTED: Post update POST');
+}
+
+// Handle Post like on PUT
+export async function post_like(req, res, next) {
+    try {
+        let post = await Post.findByIdAndUpdate(
+            req.params.postid,
+            {
+                $push: { likes: req.user._id },
+            },
+            { new: true }
+        )
+
+        if(post == null) {
+            // No results.
+            const err = new Error("Post not found!");
+            err.status = 404;
+            return next(err);
+        }
+
+        return res.status(200).json({
+            message: "Successfully liked post",
+            post
+        })
+    } catch (err) {
+        return next(err);
+    }
 }
