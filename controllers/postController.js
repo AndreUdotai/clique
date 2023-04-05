@@ -1,6 +1,7 @@
 import { body, validationResult } from 'express-validator';
 import Post from '../models/Post';
-
+import Comment from '../models/Comment';
+import async from 'async';
 
 // Display list of all posts.
 export async function post_list(req, res, next) {
@@ -22,10 +23,15 @@ export async function post_list(req, res, next) {
 
 // Display detail page for a specific Post.
 export async function post_detail(req, res, next) {
+    // async.parallel(
+        
+    // )
     try {
         let post = await Post.findById(req.params.postid).populate('user').exec();
 
         let numOfLikes = post.likes.length;
+
+        let comments = await Comment.find({ post: req.params.postid }).exec();
 
         if(post == null) {
             // No results.
@@ -39,6 +45,7 @@ export async function post_detail(req, res, next) {
             message: "View post.",
             post,
             numOfLikes,
+            comments,
         })
     } catch (err) {
         return next(err);
