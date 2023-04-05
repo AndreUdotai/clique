@@ -3,8 +3,21 @@ import Post from '../models/Post';
 
 
 // Display list of all posts.
-export async function post_list(req, res) {
-    
+export async function post_list(req, res, next) {
+    try {
+        let posts = await Post.find({}).populate('user').exec();
+
+        // for(let post of posts){
+        //     console.log(JSON.stringify(post._id));
+        // }
+
+        res.status(200).json({
+            message: "All posts!",
+            posts,
+        });
+    } catch (err) {
+        return next(err)
+    }
 }
 
 // Display detail page for a specific Post.
