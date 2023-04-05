@@ -11,7 +11,7 @@ import { confirmToken } from "./confirmToken";
 
 let indexRouter = require('./routes/index');
 let usersRouter = require('./routes/users').default;
-let postsRouter = require('./routes/posts');
+let postsRouter = require('./routes/posts').default;
 let authRouter  = require('./routes/auth').default;
 
 // let commentsRouter = require('./routes/comments');
