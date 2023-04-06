@@ -300,8 +300,7 @@ exports.accept_request = async (req, res, next) => {
                     {
                         message: 'Successfully accepted friend request',
                         user,
-                    },
-                    { new: true },
+                    }
                 );
             } else {
                 // There is no valid friend request
