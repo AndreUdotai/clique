@@ -6,15 +6,16 @@ import async from 'async';
 // Display list of all posts.
 export async function post_list(req, res, next) {
     try {
+        // Fetch all the posts in the database
         let posts = await Post.find({}).populate('user').exec();
-
-        // for(let post of posts){
-        //     console.log(JSON.stringify(post._id));
-        // }
+        // Filter the posts that were made by logged in user or frieds
+        let indexPosts = posts.filter((post) => {
+            return post.user._id === req.user._id || post.user.friends.includes(req.user._id)
+        });
 
         res.status(200).json({
             message: "All posts!",
-            posts,
+            indexPosts,
         });
     } catch (err) {
         return next(err)
@@ -33,6 +34,8 @@ export async function post_detail(req, res, next) {
 
         let comments = await Comment.find({ post: req.params.postid }).exec();
 
+        let numOfComments = comments.length;
+
         if(post == null) {
             // No results.
             const err = new Error("Post not found!");
@@ -46,6 +49,7 @@ export async function post_detail(req, res, next) {
             post,
             numOfLikes,
             comments,
+            numOfComments,
         })
     } catch (err) {
         return next(err);
