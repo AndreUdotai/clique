@@ -10,25 +10,30 @@ export async function post_list(req, res, next) {
         let posts = await Post.find({}).populate('user').exec();
         // Filter the posts that were made by logged in user or frieds
         let indexPosts = posts.filter((post) => {
-            return post.user._id === req.user._id || post.user.friends.includes(req.user._id)
+            return (
+                JSON.stringify(post.user._id) === JSON.stringify(req.user._id) ||
+                post.user.friends.includes(req.user._id)
+            );
         });
 
         res.status(200).json({
-            message: "All posts!",
+            message: 'All posts!',
             indexPosts,
         });
     } catch (err) {
-        return next(err)
+        return next(err);
     }
 }
 
 // Display detail page for a specific Post.
 export async function post_detail(req, res, next) {
     // async.parallel(
-        
+
     // )
     try {
-        let post = await Post.findById(req.params.postid).populate('user').exec();
+        let post = await Post.findById(req.params.postid)
+            .populate('user')
+            .exec();
 
         let numOfLikes = post.likes.length;
 
@@ -36,21 +41,21 @@ export async function post_detail(req, res, next) {
 
         let numOfComments = comments.length;
 
-        if(post == null) {
+        if (post == null) {
             // No results.
-            const err = new Error("Post not found!");
+            const err = new Error('Post not found!');
             err.status = 404;
             return next(err);
         }
 
         // Successful, so render.
         res.status(200).json({
-            message: "View post.",
+            message: 'View post.',
             post,
             numOfLikes,
             comments,
             numOfComments,
-        })
+        });
     } catch (err) {
         return next(err);
     }
@@ -111,20 +116,20 @@ export async function post_like(req, res, next) {
             {
                 $push: { likes: req.user._id },
             },
-            { new: true }
-        )
+            { new: true },
+        );
 
-        if(post == null) {
+        if (post == null) {
             // No results.
-            const err = new Error("Post not found!");
+            const err = new Error('Post not found!');
             err.status = 404;
             return next(err);
         }
 
         return res.status(200).json({
-            message: "Successfully liked post",
-            post
-        })
+            message: 'Successfully liked post',
+            post,
+        });
     } catch (err) {
         return next(err);
     }
