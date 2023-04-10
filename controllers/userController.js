@@ -1,4 +1,5 @@
 import User from '../models/User';
+import Post from '../models/Post';
 import bcrypt from 'bcryptjs';
 import { body, validationResult } from 'express-validator';
 import async from 'async';
@@ -19,9 +20,12 @@ exports.user_list = async (req, res) => {
 // Display detail page for a specific User.
 exports.user_detail = async (req, res, next) => {
     try {
-        let user = await User.findById(req.params.userid).populate(
+        let findUser = User.findById(req.params.userid).populate(
             'friendRequests',
         );
+        let findPosts = Post.find({user: req.params.userid}).exec();
+
+        let [user, posts] = await Promise.all([findUser, findPosts]);
 
         if (user == null) {
             // No results.
@@ -29,11 +33,11 @@ exports.user_detail = async (req, res, next) => {
             err.status = 404;
             return next(err);
         }
-
         // Successful
         res.status(200).json({
             message: 'User details',
             user,
+            posts,
         });
     } catch (err) {
         return next(err);
@@ -133,18 +137,21 @@ exports.user_delete = (req, res) => {
 // Handle User update.
 exports.user_update = [
     // Validate and sanitize fields.
-    body('name', 'Name must not be empty!')
-        .trim()
-        .isLength({ min: 1 }),
+    body('name', 'Name must not be empty!').trim().isLength({ min: 1 }),
     body('bio').trim(),
     body('username', 'Username must not be empty!').trim().isLength({ min: 1 }),
 
     // Process request after validation and sanitization.
     async (req, res, next) => {
-        try{
+        try {
             // Confirm is trying to update its own record
-            if (JSON.stringify(req.params.userid) !== JSON.stringify(req.user._id)){
-                return res.status(400).json({ message: 'You can only update your profile!' });
+            if (
+                JSON.stringify(req.params.userid) !==
+                JSON.stringify(req.user._id)
+            ) {
+                return res
+                    .status(400)
+                    .json({ message: 'You can only update your profile!' });
             }
 
             // Extract the validation errors from a request
@@ -152,10 +159,10 @@ exports.user_update = [
 
             // Create a User object with trimmed and old id.
             const user = new User({
-                name:       req.body.name,
-                bio:        req.body.bio,
-                username:   req.body.username,
-                _id:        req.params.userid,
+                name: req.body.name,
+                bio: req.body.bio,
+                username: req.body.username,
+                _id: req.params.userid,
             });
 
             if (!errors.isEmpty()) {
@@ -185,11 +192,11 @@ exports.user_update = [
                     updatedUser,
                 });
             }
-        } catch(err){
-            return next(err)
+        } catch (err) {
+            return next(err);
         }
-    }
-]
+    },
+];
 
 // Handle User friend request.
 exports.friend_request = async (req, res, next) => {
@@ -296,12 +303,10 @@ exports.accept_request = async (req, res, next) => {
                     { new: true },
                 );
 
-                return res.status(200).json(
-                    {
-                        message: 'Successfully accepted friend request',
-                        user,
-                    }
-                );
+                return res.status(200).json({
+                    message: 'Successfully accepted friend request',
+                    user,
+                });
             } else {
                 // There is no valid friend request
                 return res.json({
