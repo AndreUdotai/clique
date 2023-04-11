@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
+import { Schema as _Schema, model } from 'mongoose';
 
-const Schema = mongoose.Schema;
+const Schema = _Schema;
 
 const UserSchema = new Schema({
     username: {
@@ -36,7 +36,7 @@ const UserSchema = new Schema({
         //     }
         // },
         {
-                type: mongoose.Schema.Types.ObjectId,
+                type: _Schema.Types.ObjectId,
                 ref: 'User',
         },
     ],
@@ -48,7 +48,7 @@ const UserSchema = new Schema({
         //     }
         // },
         {
-            type: mongoose.Schema.Types.ObjectId,
+            type: _Schema.Types.ObjectId,
             ref: 'User',
         },
     ],
@@ -86,4 +86,4 @@ const UserSchema = new Schema({
 });
 
 // Export model
-module.exports = mongoose.model('User', UserSchema);
+export default model('User', UserSchema);

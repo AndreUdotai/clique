@@ -1,5 +1,5 @@
 import { Router } from 'express';
-var router = Router();
+const router = Router();
 
 // Require Post controller module
 import { post_create, post_delete, post_update, post_detail, post_list, post_like } from '../controllers/postController';

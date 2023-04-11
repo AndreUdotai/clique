@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
+import { Schema as _Schema, model } from 'mongoose';
 
-const Schema = mongoose.Schema;
+const Schema = _Schema;
 
 const PostSchema = new Schema({
     body: {
@@ -11,7 +11,7 @@ const PostSchema = new Schema({
     },
     likes: [
         {
-            type: mongoose.Schema.Types.ObjectId,
+            type: _Schema.Types.ObjectId,
             ref: 'User',
         },
     ],
@@ -20,11 +20,11 @@ const PostSchema = new Schema({
         default: Date.now,
     },
     user: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: _Schema.Types.ObjectId,
         ref: 'User',
         required: true,
     },
 });
 
 // Export model
-module.exports = mongoose.model('Post', PostSchema);
+export default model('Post', PostSchema);

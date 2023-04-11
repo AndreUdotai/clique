@@ -1,5 +1,5 @@
 import { Router } from 'express';
-var router = Router();
+const router = Router();
 
 // Require User controller module
 import { user_register, friend_request, user_delete, user_update, user_detail, user_list, accept_request, reject_request} from '../controllers/userController';
