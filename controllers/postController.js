@@ -27,26 +27,22 @@ export async function post_list(req, res, next) {
 
 // Display detail page for a specific Post.
 export async function post_detail(req, res, next) {
-    // async.parallel(
-
-    // )
     try {
         let post = await Post.findById(req.params.postid)
             .populate('user')
             .exec();
 
-        let numOfLikes = post.likes.length;
-
-        let comments = await Comment.find({ post: req.params.postid }).exec();
-
-        let numOfComments = comments.length;
-
-        if (post == null) {
+        if (post === null) {
             // No results.
             const err = new Error('Post not found!');
             err.status = 404;
             return next(err);
         }
+        
+        let comments = await Comment.find({ post: req.params.postid }).exec();
+        
+        let numOfLikes = post.likes.length;
+        let numOfComments = comments.length;
 
         // Successful, so render.
         res.status(200).json({
