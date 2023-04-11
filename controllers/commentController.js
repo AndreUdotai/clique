@@ -1,7 +1,7 @@
 import { body, validationResult } from 'express-validator';
 import Comment from '../models/Comment';
 
-// Display list of all Commnents.
+// Display list of all Commnents for a particular post.
 export function comment_list(req, res) {
     res.send('NOT IMPLEMENTED: Comment list');
 }

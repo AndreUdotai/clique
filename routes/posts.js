@@ -36,7 +36,7 @@ router.put("/posts/:postid/comments/:commentid", comment_update);
 // GET request for one Comment. ??
 router.get("/posts/:postid/comments/:commentid", comment_detail);
 
-// GET request for list of all Comment items.
+// GET request for list of all Comment for a particular post.
 router.get("/posts/:postid/comments", comment_list);
 
 export default router;
